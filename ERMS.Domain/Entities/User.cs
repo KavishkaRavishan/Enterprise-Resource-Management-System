@@ -1,10 +1,7 @@
-using ERMS.Domain.Entities;
-
 namespace ERMS.Domain.Entities
 {
-    public class User
+    public class User : BaseEntity
     {
-        public Guid Id { get; private set; }
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string Email { get; private set; }
@@ -15,7 +12,6 @@ namespace ERMS.Domain.Entities
 
         public User(string firstName, string lastName, string email, Role role)
         {
-            Id = Guid.NewGuid();
             FirstName = firstName;
             LastName = lastName;
             Email = email;
@@ -25,6 +21,14 @@ namespace ERMS.Domain.Entities
         public void SetPassword(string passwordHash)
         {
             PasswordHash = passwordHash;
+            Updated = DateTime.UtcNow;
+        }
+
+        public void UpdateProfile(string firstName, string lastName)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            Updated = DateTime.UtcNow;
         }
     }
 }
