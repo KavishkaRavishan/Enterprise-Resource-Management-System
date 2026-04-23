@@ -45,7 +45,6 @@
 ### Frontend
 - React + Vite
 - Tailwind CSS
-- Zustand (state management)
 - React Router
 - Axios for API communication
 
@@ -90,8 +89,6 @@ Erms.Infrastructure/
 3. Run migrations:
 dotnet ef database update
 
-markdown
-Copy code
 4. Start API:
 dotnet run
 
