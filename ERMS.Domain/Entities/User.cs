@@ -17,6 +17,7 @@ namespace ERMS.Domain.Entities
         public ICollection<ProjectTask> AssignedTasks { get; private set; } = new List<ProjectTask>();
         public ICollection<TaskComment> Comments { get; private set; } = new List<TaskComment>();
         public ICollection<Notification> Notifications { get; private set; } = new List<Notification>();
+        public ICollection<TimeLog> TimeLogs { get; private set; } = new List<TimeLog>();
 
         private User() { } // For EF Core
 

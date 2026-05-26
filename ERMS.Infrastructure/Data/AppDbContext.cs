@@ -13,6 +13,7 @@ namespace ERMS.Infrastructure.Data
         public DbSet<ProjectTask> ProjectTasks => Set<ProjectTask>();
         public DbSet<TaskComment> TaskComments => Set<TaskComment>();
         public DbSet<Notification> Notifications => Set<Notification>();
+        public DbSet<TimeLog> TimeLogs => Set<TimeLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,12 +1,14 @@
-# ERMS Implementation Plan
+# ERMS Enterprise Upgrade Plan
+
+This implementation plan outlines the steps to upgrade the Enterprise Resource Management System (ERMS) to an industry-grade platform, featuring Timesheet Time Logging, Document Attachments, advanced Recharts metrics, CQRS MediatR architecture, and full system testing.
+
+---
 
 ## Decisions
-- ✅ Seed default admin: `admin@erms.com` / `Admin@123`
-- ✅ Support avatar image uploads for user profiles
-- ✅ Notifications feature — Option A Polling-based Completed
-- ✅ SQL Server: localhost with Windows Auth
-- ✅ Tailwind v4 syntax (matches installed package)
-- ✅ Polling-free: no real-time features needed
+- ✅ Database Strategy: SQL Server Localhost
+- ✅ File Storage Strategy: Local filesystem storage under `ERMS.API/wwwroot/uploads/attachments`
+- ✅ Dynamic Audit Trails: Automated EF Core Auditing Interceptor
+- ✅ Architectural Refactoring: Step-by-step CQRS integration
 
 ---
 
@@ -14,82 +16,89 @@
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | Domain Layer — Complete Entity Model | ✅ Completed |
-| 2 | Application Layer — DTOs, Interfaces, Services | ✅ Completed |
-| 3 | Infrastructure Layer — Data Access & Auth | ✅ Completed |
-| 4 | API Layer — Controllers, Middleware, Program.cs | ✅ Completed |
-| 5 | Database Migration & Seeding | ✅ Completed |
-| 6 | Frontend — Core Setup & Auth | ✅ Completed |
-| 7 | Frontend — Feature Pages | ✅ Completed |
-| 8 | Polish & Final Touches | ✅ Completed |
+| 1 | Timesheets & Time Logging (Database, API, Frontend) | ✅ Completed |
+| 2 | Project & Task Document Management (File Uploads) | ⬜ Not Started |
+| 3 | Premium Dashboard Metrics & Interactive Charts (Recharts) | ⬜ Not Started |
+| 4 | Clean CQRS Refactor (MediatR & Pipeline Validation) | ⬜ Not Started |
+| 5 | Global System Audit Logging (EF Core Interceptor) | ⬜ Not Started |
+| 6 | System Testing (xUnit Test Suite) | ⬜ Not Started |
 
 ---
 
-## Phase 1: Domain Layer
+## Phase 1: Timesheets & Time Logging
 
-### Files:
-- [x] Modify `User.cs` — add RefreshToken, IsActive, AvatarPath, nav props
-- [x] New `Project.cs`
-- [x] New `ProjectMember.cs`
-- [x] New `ProjectTask.cs`
-- [x] New `TaskComment.cs`
-- [x] New `Enums/ProjectStatus.cs`
-- [x] New `Enums/TaskItemStatus.cs`
-- [x] New `Enums/TaskPriority.cs`
+### Backend
+- [x] Create `TimeLog.cs` entity in Domain layer (TaskId, UserId, HoursSpent, Description, DateLogged)
+- [x] Create `TimeLogConfiguration.cs` fluent mapping configuration in Infrastructure layer
+- [x] Create `ITimeLogRepository.cs` and implement `TimeLogRepository.cs`
+- [x] Create DTOs: `TimeLogDto.cs`, `LogTimeDto.cs`
+- [x] Create `ITimeLogService.cs` and implement `TimeLogService.cs`
+- [x] Add `TimeLogsController.cs` in API project
+- [x] Apply EF Core migration `AddTimesheets` and update database
 
-## Phase 2: Application Layer
+### Frontend
+- [x] Create `useTimeLogStore.js` for timesheet state management
+- [x] Add "Log Time" section/modal in Kanban task detail view
+- [x] Add a timesheet history listing inside the task detail pane
+- [x] Display aggregated total logged hours on Project Details dashboard
 
-### Files:
-- [x] Delete `Class1.cs`
-- [x] DTOs: Auth, Users, Projects, Tasks, Comments, Dashboard
-- [x] Interfaces: IAuthService, IUserService, IProjectService, ITaskService, ICommentService, IDashboardService
-- [x] Repository Interfaces: IUserRepository, IProjectRepository, ITaskRepository, ICommentRepository
-- [x] Services: AuthService, UserService, ProjectService, TaskService, CommentService, DashboardService
-- [x] Common: ServiceResult, MappingExtensions
+---
 
-## Phase 3: Infrastructure Layer
+## Phase 2: Document Management & File Attachments
 
-### Files:
-- [x] Delete `Class1.cs`
-- [x] `Data/AppDbContext.cs`
-- [x] Entity Configurations (User, Project, ProjectMember, ProjectTask, TaskComment)
-- [x] Repositories (User, Project, Task, Comment)
-- [x] `Auth/JwtTokenGenerator.cs`, `Auth/PasswordHasher.cs`
-- [x] `Seed/DataSeeder.cs`
-- [x] `DependencyInjection.cs`
+### Backend
+- [ ] Create `Attachment.cs` entity in Domain layer (FileName, Size, FilePath, ContentType, TaskId/ProjectId)
+- [ ] Configure EF mappings for Attachments (cascade delete on task removal)
+- [ ] Implement `IAttachmentRepository.cs` and `AttachmentRepository.cs`
+- [ ] Implement `IFileStorageService.cs` saving attachments safely to `ERMS.API/wwwroot/uploads/attachments/`
+- [ ] Add `AttachmentsController.cs` supporting `POST upload` and `GET download` operations
+- [ ] Apply EF Core migration `AddAttachments` and update database
 
-## Phase 4: API Layer
+### Frontend
+- [ ] Create `useAttachmentStore.js` for managing file uploads
+- [ ] Add drag-and-drop file attachment box inside Task Details modal
+- [ ] List uploaded attachments inside task panels with preview/download links
 
-### Files:
-- [x] Delete `Class1.cs`
-- [x] Change SDK to Web, add Swashbuckle
-- [x] `Program.cs`
-- [x] `appsettings.json` + `appsettings.Development.json`
-- [x] Controllers: Auth, Users, Projects, Tasks, Comments, Dashboard
-- [x] `Middleware/ExceptionHandlingMiddleware.cs`
+---
 
-## Phase 5: Database Migration & Seeding
-- [x] Run `dotnet ef migrations add InitialCreate`
-- [x] Run `dotnet ef database update`
+## Phase 3: Premium Dashboard Metrics & Interactive Charts
 
-## Phase 6: Frontend — Core Setup & Auth
-- [x] Replace stock template
-- [x] Axios instance with JWT interceptor
-- [x] UI components (Button, Input, Modal, Card, Badge, etc.)
-- [x] Layout (Sidebar, Topbar, ProtectedRoute)
-- [x] Auth store + Login page
-- [x] Routing setup
+### Frontend
+- [ ] Install `recharts` package inside `ERMS.Client`
+- [ ] Re-engineer Dashboard widgets to include interactive graphs:
+  - Pie/Donut Chart showing Task distribution by state (`To Do`, `In Progress`, `Done`)
+  - Bar Chart illustrating logged employee timesheet hours per project
+  - Line Chart showcasing task completion velocity over time
+- [ ] Add loading skeletons and entrance animations
 
-## Phase 7: Frontend — Feature Pages
-- [x] User Management (Admin)
-- [x] Project Management
-- [x] Task Kanban Board
-- [x] Dashboard with analytics
-- [x] Avatar upload in profile
+---
 
-## Phase 8: Polish
-- [x] Custom dark-friendly/light curated premium color palette
-- [x] Responsive layout with collapsible sidebar
-- [x] E2E-verified interactive components and loading skeletons
-- [x] Clean forms with real-time feedback
-- [x] CSS animations and page transition transitions
+## Phase 4: Clean CQRS Architecture Refactor
+
+### Backend
+- [ ] Add NuGet packages: `MediatR`, `FluentValidation.DependencyInjectionExtensions`
+- [ ] Create Pipeline validation behavior: `ValidationBehavior.cs`
+- [ ] Refactor one core domain segment (e.g. `Tasks`) to use MediatR:
+  - Create commands: `CreateTaskCommand`, `UpdateTaskCommand`, `DeleteTaskCommand`
+  - Create queries: `GetTasksByProjectQuery`, `GetTaskByIdQuery`
+  - Write request validators using FluentValidation
+
+---
+
+## Phase 5: Global System Audit Logging
+
+### Backend
+- [ ] Create `AuditLog.cs` entity in Domain layer (EntityName, EntityId, Action, Timestamp, OldValues, NewValues, UserId)
+- [ ] Implement EF Core `SaveChangesInterceptor` to capture dirty changes automatically during entity saves
+- [ ] Configure Context to auto-persist audit records upon save operations
+- [ ] Expose an Admin-only audit trail dashboard in the frontend
+
+---
+
+## Phase 6: System Testing Suite
+
+### Backend Tests
+- [ ] Create `ERMS.Tests` xUnit test project
+- [ ] Write repository mock tests using `Moq`
+- [ ] Write domain model unit tests validating business rules
+- [ ] Verify validation pipelines using unit test cases

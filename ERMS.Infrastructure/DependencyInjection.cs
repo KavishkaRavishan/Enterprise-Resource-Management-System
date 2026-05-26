@@ -24,6 +24,7 @@ namespace ERMS.Infrastructure
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<ITimeLogRepository, TimeLogRepository>();
 
             // Auth
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -37,6 +38,7 @@ namespace ERMS.Infrastructure
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<ITimeLogService, TimeLogService>();
 
             return services;
         }

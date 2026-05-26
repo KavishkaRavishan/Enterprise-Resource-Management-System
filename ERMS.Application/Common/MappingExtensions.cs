@@ -6,6 +6,7 @@ using ERMS.Application.DTOs.Tasks;
 using ERMS.Application.DTOs.Comments;
 using ERMS.Application.DTOs.Dashboard;
 using ERMS.Application.DTOs.Auth;
+using ERMS.Application.DTOs.TimeLogs;
 
 namespace ERMS.Application.Common
 {
@@ -130,6 +131,24 @@ namespace ERMS.Application.Common
                 Type = notification.Type.ToString(),
                 ReferenceId = notification.ReferenceId,
                 Created = notification.Created
+            };
+        }
+
+        // TimeLog mappings
+        public static TimeLogDto ToDto(this TimeLog timeLog)
+        {
+            return new TimeLogDto
+            {
+                Id = timeLog.Id,
+                TaskId = timeLog.TaskId,
+                TaskTitle = timeLog.Task?.Title ?? string.Empty,
+                UserId = timeLog.UserId,
+                UserName = timeLog.User != null ? $"{timeLog.User.FirstName} {timeLog.User.LastName}" : string.Empty,
+                UserAvatar = timeLog.User?.AvatarPath ?? string.Empty,
+                HoursSpent = timeLog.HoursSpent,
+                Description = timeLog.Description,
+                DateLogged = timeLog.DateLogged,
+                Created = timeLog.Created
             };
         }
     }
