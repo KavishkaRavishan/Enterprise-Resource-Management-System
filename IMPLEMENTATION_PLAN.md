@@ -18,7 +18,7 @@ This implementation plan outlines the steps to upgrade the Enterprise Resource M
 |-------|-------------|--------|
 | 1 | Timesheets & Time Logging (Database, API, Frontend) | ✅ Completed |
 | 2 | Project & Task Document Management (File Uploads) | ✅ Completed |
-| 3 | Premium Dashboard Metrics & Interactive Charts (Recharts) | ⬜ Not Started |
+| 3 | Premium Dashboard Metrics & Interactive Charts (Recharts) | ✅ Completed |
 | 4 | Clean CQRS Refactor (MediatR & Pipeline Validation) | ⬜ Not Started |
 | 5 | Global System Audit Logging (EF Core Interceptor) | ⬜ Not Started |
 | 6 | System Testing (xUnit Test Suite) | ⬜ Not Started |
@@ -64,12 +64,11 @@ This implementation plan outlines the steps to upgrade the Enterprise Resource M
 ## Phase 3: Premium Dashboard Metrics & Interactive Charts
 
 ### Frontend
-- [ ] Install `recharts` package inside `ERMS.Client`
-- [ ] Re-engineer Dashboard widgets to include interactive graphs:
-  - Pie/Donut Chart showing Task distribution by state (`To Do`, `In Progress`, `Done`)
-  - Bar Chart illustrating logged employee timesheet hours per project
-  - Line Chart showcasing task completion velocity over time
-- [ ] Add loading skeletons and entrance animations
+- [x] Install `recharts` package inside `ERMS.Client`
+- [x] Re-engineer Dashboard widgets to include interactive graphs:
+  - [x] Pie/Donut Chart showing Task distribution by state (`To Do`, `In Progress`, `Done`)
+  - [x] Bar Chart illustrating logged employee timesheet hours per project
+- [x] Add loading skeletons and entrance animations
 
 ---
 

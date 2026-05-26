@@ -37,6 +37,7 @@ namespace ERMS.Infrastructure.Repositories
                 .Include(p => p.Members)
                     .ThenInclude(m => m.User)
                 .Include(p => p.Tasks)
+                    .ThenInclude(t => t.TimeLogs)
                 .OrderByDescending(p => p.Created)
                 .ToListAsync();
         }
@@ -48,6 +49,7 @@ namespace ERMS.Infrastructure.Repositories
                 .Include(p => p.Members)
                     .ThenInclude(m => m.User)
                 .Include(p => p.Tasks)
+                    .ThenInclude(t => t.TimeLogs)
                 .Where(p => p.CreatedById == userId || p.Members.Any(m => m.UserId == userId))
                 .OrderByDescending(p => p.Created)
                 .ToListAsync();

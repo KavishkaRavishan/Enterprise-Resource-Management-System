@@ -44,7 +44,8 @@ namespace ERMS.Application.Services
                 CompletedTasks = p.Tasks?.Count(t => t.Status == TaskItemStatus.Done) ?? 0,
                 ProgressPercentage = p.Tasks != null && p.Tasks.Count > 0
                     ? Math.Round((double)p.Tasks.Count(t => t.Status == TaskItemStatus.Done) / p.Tasks.Count * 100, 1)
-                    : 0
+                    : 0,
+                TotalHoursLogged = p.Tasks?.SelectMany(t => t.TimeLogs).Sum(tl => (double)tl.HoursSpent) ?? 0
             }).ToList();
 
             var dashboard = new DashboardDto

@@ -29,5 +29,6 @@ namespace ERMS.Application.DTOs.Dashboard
         public int TotalTasks { get; set; }
         public int CompletedTasks { get; set; }
         public double ProgressPercentage { get; set; }
+        public double TotalHoursLogged { get; set; }
     }
 }
