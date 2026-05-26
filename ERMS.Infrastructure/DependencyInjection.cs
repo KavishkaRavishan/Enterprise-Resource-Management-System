@@ -4,6 +4,7 @@ using ERMS.Application.Services;
 using ERMS.Infrastructure.Auth;
 using ERMS.Infrastructure.Data;
 using ERMS.Infrastructure.Repositories;
+using ERMS.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,10 +26,14 @@ namespace ERMS.Infrastructure
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<ITimeLogRepository, TimeLogRepository>();
+            services.AddScoped<IAttachmentRepository, AttachmentRepository>();
 
             // Auth
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+            // File Storage
+            services.AddSingleton<IFileStorageService, FileStorageService>();
 
             // Application Services
             services.AddScoped<IAuthService, AuthService>();
@@ -39,6 +44,7 @@ namespace ERMS.Infrastructure
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ITimeLogService, TimeLogService>();
+            services.AddScoped<IAttachmentService, AttachmentService>();
 
             return services;
         }

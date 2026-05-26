@@ -17,7 +17,7 @@ This implementation plan outlines the steps to upgrade the Enterprise Resource M
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Timesheets & Time Logging (Database, API, Frontend) | ✅ Completed |
-| 2 | Project & Task Document Management (File Uploads) | ⬜ Not Started |
+| 2 | Project & Task Document Management (File Uploads) | ✅ Completed |
 | 3 | Premium Dashboard Metrics & Interactive Charts (Recharts) | ⬜ Not Started |
 | 4 | Clean CQRS Refactor (MediatR & Pipeline Validation) | ⬜ Not Started |
 | 5 | Global System Audit Logging (EF Core Interceptor) | ⬜ Not Started |
@@ -47,17 +47,17 @@ This implementation plan outlines the steps to upgrade the Enterprise Resource M
 ## Phase 2: Document Management & File Attachments
 
 ### Backend
-- [ ] Create `Attachment.cs` entity in Domain layer (FileName, Size, FilePath, ContentType, TaskId/ProjectId)
-- [ ] Configure EF mappings for Attachments (cascade delete on task removal)
-- [ ] Implement `IAttachmentRepository.cs` and `AttachmentRepository.cs`
-- [ ] Implement `IFileStorageService.cs` saving attachments safely to `ERMS.API/wwwroot/uploads/attachments/`
-- [ ] Add `AttachmentsController.cs` supporting `POST upload` and `GET download` operations
-- [ ] Apply EF Core migration `AddAttachments` and update database
+- [x] Create `Attachment.cs` entity in Domain layer (FileName, Size, FilePath, ContentType, TaskId/ProjectId)
+- [x] Configure EF mappings for Attachments (cascade delete on task removal)
+- [x] Implement `IAttachmentRepository.cs` and `AttachmentRepository.cs`
+- [x] Implement `IFileStorageService.cs` saving attachments safely to `ERMS.API/wwwroot/uploads/attachments/`
+- [x] Add `AttachmentsController.cs` supporting `POST upload` and `GET download` operations
+- [x] Apply EF Core migration `AddAttachments` and update database
 
 ### Frontend
-- [ ] Create `useAttachmentStore.js` for managing file uploads
-- [ ] Add drag-and-drop file attachment box inside Task Details modal
-- [ ] List uploaded attachments inside task panels with preview/download links
+- [x] Create `useAttachmentStore.js` for managing file uploads
+- [x] Add drag-and-drop file attachment box inside Task Details modal
+- [x] List uploaded attachments inside task panels with preview/download links
 
 ---
 

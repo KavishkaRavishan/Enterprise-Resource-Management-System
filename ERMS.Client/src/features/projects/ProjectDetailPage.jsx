@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuthStore } from '../auth/useAuthStore';
-import { ArrowLeft, Plus, Users, Calendar, Trash2, Edit, X, MessageSquare, GripVertical, Clock, History } from 'lucide-react';
+import { ArrowLeft, Plus, Users, Calendar, Trash2, Edit, X, MessageSquare, GripVertical, Clock, History, Paperclip, FileText, Download, UploadCloud } from 'lucide-react';
 import { useTimeLogStore } from '../timelogs/useTimeLogStore';
+import { useAttachmentStore } from '../attachments/useAttachmentStore';
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
@@ -180,10 +181,16 @@ function TaskDetailModal({ task, onClose, onUpdate }) {
   const [dateLogged, setDateLogged] = useState(new Date().toISOString().split('T')[0]);
   const [submittingLog, setSubmittingLog] = useState(false);
 
+  // Attachments states
+  const { attachments, fetchAttachments, uploadAttachment, deleteAttachment, loading: loadingAttachments } = useAttachmentStore();
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
     api.get(`/comments/task/${task.id}`).then(r => setComments(r.data.data || []));
     fetchTimeLogsByTask(task.id);
-  }, [task.id, fetchTimeLogsByTask]);
+    fetchAttachments(task.id);
+  }, [task.id, fetchTimeLogsByTask, fetchAttachments]);
 
   const addComment = async () => {
     if (!newComment.trim()) return;
@@ -228,7 +235,66 @@ function TaskDetailModal({ task, onClose, onUpdate }) {
     }
   };
 
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processUpload(file);
+  };
+
+  const processUpload = async (file) => {
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size exceeds the maximum limit of 10MB');
+      return;
+    }
+    setUploading(true);
+    const result = await uploadAttachment(task.id, file);
+    if (result.success) {
+      fetchAttachments(task.id);
+    } else {
+      alert(result.error || 'Failed to upload attachment');
+    }
+    setUploading(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    await processUpload(file);
+  };
+
+  const handleDeleteAttachment = async (attachmentId) => {
+    if (!confirm('Are you sure you want to delete this attachment?')) return;
+    const result = await deleteAttachment(attachmentId);
+    if (result.success) {
+      fetchAttachments(task.id);
+    } else {
+      alert(result.error);
+    }
+  };
+
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   const taskTotalHours = timeLogs.reduce((sum, log) => sum + Number(log.hoursSpent), 0);
+
+  // Serve downloads through API host URL directly (removing '/api' segment safely)
+  const apiBaseHost = api.defaults.baseURL?.replace('/api', '') || 'http://localhost:5000';
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
@@ -236,7 +302,7 @@ function TaskDetailModal({ task, onClose, onUpdate }) {
         <div className="flex items-center justify-between p-6 border-b border-surface-100">
           <div>
             <h2 className="text-lg font-semibold text-surface-900">{task.title}</h2>
-            <p className="text-xs text-surface-400 mt-0.5">Project Task</p>
+            <p className="text-xs text-surface-400 mt-0.5">Project Task Details</p>
           </div>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-surface-100"><X className="w-5 h-5"/></button>
         </div>
@@ -278,10 +344,20 @@ function TaskDetailModal({ task, onClose, onUpdate }) {
             >
               <Clock className="w-4 h-4" /> Time Logs ({timeLogs.length})
             </button>
+            <button
+              onClick={() => setActiveTab('attachments')}
+              className={`flex-1 pb-2 text-sm font-semibold border-b-2 text-center transition-all flex items-center justify-center gap-1.5 ${
+                activeTab === 'attachments'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-surface-400 hover:text-surface-600'
+              }`}
+            >
+              <Paperclip className="w-4 h-4" /> Attachments ({attachments.length})
+            </button>
           </div>
 
           {/* tab contents */}
-          {activeTab === 'comments' ? (
+          {activeTab === 'comments' && (
             <div className="space-y-4">
               <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
                 {comments.map(c=>(
@@ -301,7 +377,9 @@ function TaskDetailModal({ task, onClose, onUpdate }) {
                 <button onClick={addComment} disabled={sending||!newComment.trim()} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm hover:bg-primary-700 disabled:opacity-50 font-medium">Send</button>
               </div>
             </div>
-          ) : (
+          )}
+
+          {activeTab === 'timelogs' && (
             <div className="space-y-6">
               {/* log time entry form */}
               <form onSubmit={handleLogTimeSubmit} className="bg-surface-50 rounded-xl p-4 border border-surface-100 space-y-3">
@@ -389,6 +467,86 @@ function TaskDetailModal({ task, onClose, onUpdate }) {
                   ))}
                   {timeLogs.length === 0 && (
                     <p className="text-xs text-center text-surface-400 py-6">No hours logged on this task yet.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'attachments' && (
+            <div className="space-y-4">
+              {/* Drag and Drop Zone */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
+                  dragging
+                    ? 'border-primary-500 bg-primary-50/50'
+                    : 'border-surface-200 hover:border-primary-400 hover:bg-surface-50/30'
+                }`}
+                onClick={() => document.getElementById('attachment-file-input').click()}
+              >
+                <input
+                  type="file"
+                  id="attachment-file-input"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
+                <UploadCloud className={`w-8 h-8 ${dragging ? 'text-primary-500' : 'text-surface-400'} animate-bounce`} />
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-surface-700">
+                    {uploading ? 'Uploading attachment...' : 'Click to upload or drag & drop'}
+                  </p>
+                  <p className="text-xs text-surface-400 mt-1">Supports images, PDF, documents up to 10MB</p>
+                </div>
+              </div>
+
+              {/* Attachments List */}
+              <div className="space-y-2.5">
+                <h4 className="text-xs font-bold text-surface-700 uppercase tracking-wider">Task Attachments</h4>
+                <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                  {attachments.map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-center justify-between p-3 border border-surface-150 rounded-lg hover:bg-surface-50/30 transition-colors"
+                    >
+                      <div className="flex gap-2.5 items-center min-w-0">
+                        <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center flex-shrink-0 text-surface-600">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-surface-800 truncate" title={file.fileName}>
+                            {file.fileName}
+                          </p>
+                          <p className="text-[10px] text-surface-400 truncate">
+                            {formatBytes(file.size)} • By {file.uploadedByName}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <a
+                          href={`${apiBaseHost}${file.filePath}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download={file.fileName}
+                          className="p-1.5 rounded hover:bg-surface-100 text-surface-500 hover:text-primary-600 transition-all"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </a>
+                        {(user?.role === 'Admin' || user?.role === 'Manager' || file.uploadedById === user?.id) && (
+                          <button
+                            onClick={() => handleDeleteAttachment(file.id)}
+                            className="p-1.5 rounded hover:bg-red-50 text-surface-400 hover:text-red-500 transition-all"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {attachments.length === 0 && (
+                    <p className="text-xs text-center text-surface-400 py-6">No attachments uploaded yet.</p>
                   )}
                 </div>
               </div>

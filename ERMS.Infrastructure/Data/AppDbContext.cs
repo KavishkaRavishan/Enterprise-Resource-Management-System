@@ -14,6 +14,7 @@ namespace ERMS.Infrastructure.Data
         public DbSet<TaskComment> TaskComments => Set<TaskComment>();
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<TimeLog> TimeLogs => Set<TimeLog>();
+        public DbSet<Attachment> Attachments => Set<Attachment>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

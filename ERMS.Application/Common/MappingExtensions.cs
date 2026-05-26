@@ -7,6 +7,7 @@ using ERMS.Application.DTOs.Comments;
 using ERMS.Application.DTOs.Dashboard;
 using ERMS.Application.DTOs.Auth;
 using ERMS.Application.DTOs.TimeLogs;
+using ERMS.Application.DTOs.Attachments;
 
 namespace ERMS.Application.Common
 {
@@ -149,6 +150,25 @@ namespace ERMS.Application.Common
                 Description = timeLog.Description,
                 DateLogged = timeLog.DateLogged,
                 Created = timeLog.Created
+            };
+        }
+
+        // Attachment mappings
+        public static AttachmentDto ToDto(this Attachment attachment)
+        {
+            return new AttachmentDto
+            {
+                Id = attachment.Id,
+                FileName = attachment.FileName,
+                Size = attachment.Size,
+                FilePath = attachment.FilePath,
+                ContentType = attachment.ContentType,
+                TaskId = attachment.TaskId,
+                UploadedById = attachment.UploadedById,
+                UploadedByName = attachment.UploadedBy != null 
+                    ? $"{attachment.UploadedBy.FirstName} {attachment.UploadedBy.LastName}" 
+                    : string.Empty,
+                Created = attachment.Created
             };
         }
     }
