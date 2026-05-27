@@ -30,6 +30,28 @@ namespace ERMS.API.Middleware
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
+
+            if (exception is FluentValidation.ValidationException validationException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                var errors = validationException.Errors
+                    .GroupBy(x => x.PropertyName)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(x => x.ErrorMessage).ToArray()
+                    );
+
+                var validationResponse = new
+                {
+                    success = false,
+                    message = "Validation failed",
+                    errors = errors
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(validationResponse));
+                return;
+            }
+
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             var response = new

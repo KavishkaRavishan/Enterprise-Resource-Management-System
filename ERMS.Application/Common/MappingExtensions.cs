@@ -8,6 +8,7 @@ using ERMS.Application.DTOs.Dashboard;
 using ERMS.Application.DTOs.Auth;
 using ERMS.Application.DTOs.TimeLogs;
 using ERMS.Application.DTOs.Attachments;
+using ERMS.Application.DTOs.AuditLogs;
 
 namespace ERMS.Application.Common
 {
@@ -169,6 +170,24 @@ namespace ERMS.Application.Common
                     ? $"{attachment.UploadedBy.FirstName} {attachment.UploadedBy.LastName}" 
                     : string.Empty,
                 Created = attachment.Created
+            };
+        }
+        // AuditLog mappings
+        public static AuditLogDto ToDto(this AuditLog log)
+        {
+            return new AuditLogDto
+            {
+                Id = log.Id,
+                EntityName = log.EntityName,
+                EntityId = log.EntityId,
+                Action = log.Action,
+                Timestamp = log.Timestamp,
+                OldValues = log.OldValues,
+                NewValues = log.NewValues,
+                UserId = log.UserId,
+                UserName = log.User != null 
+                    ? $"{log.User.FirstName} {log.User.LastName}" 
+                    : "System"
             };
         }
     }

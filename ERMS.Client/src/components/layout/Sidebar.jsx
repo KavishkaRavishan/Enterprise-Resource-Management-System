@@ -8,6 +8,7 @@ import {
   LogOut,
   ChevronLeft,
   Menu,
+  ClipboardList,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -16,6 +17,7 @@ const navItems = [
   { path: '/projects', label: 'Projects', icon: FolderKanban, roles: ['Admin', 'Manager', 'Employee'] },
   { path: '/tasks', label: 'My Tasks', icon: CheckSquare, roles: ['Admin', 'Manager', 'Employee'] },
   { path: '/users', label: 'Users', icon: Users, roles: ['Admin'] },
+  { path: '/audit-logs', label: 'Audit Logs', icon: ClipboardList, roles: ['Admin'] },
 ];
 
 export default function Sidebar() {

@@ -1,5 +1,6 @@
-using ERMS.Application.DTOs.Tasks;
-using ERMS.Application.Interfaces;
+using ERMS.Application.Tasks.Commands;
+using ERMS.Application.Tasks.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,53 +11,55 @@ namespace ERMS.API.Controllers
     [Authorize]
     public class TasksController : ControllerBase
     {
-        private readonly ITaskService _taskService;
+        private readonly IMediator _mediator;
 
-        public TasksController(ITaskService taskService)
+        public TasksController(IMediator mediator)
         {
-            _taskService = taskService;
+            _mediator = mediator;
         }
 
         [HttpGet("project/{projectId}")]
         public async Task<IActionResult> GetByProject(Guid projectId)
         {
-            var result = await _taskService.GetTasksByProjectAsync(projectId);
+            var result = await _mediator.Send(new GetTasksByProjectQuery { ProjectId = projectId });
             return StatusCode(result.StatusCode, result);
         }
 
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUser(Guid userId)
         {
-            var result = await _taskService.GetTasksByUserAsync(userId);
+            var result = await _mediator.Send(new GetTasksByUserQuery { UserId = userId });
             return StatusCode(result.StatusCode, result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var result = await _taskService.GetTaskByIdAsync(id);
+            var result = await _mediator.Send(new GetTaskByIdQuery { Id = id });
             return StatusCode(result.StatusCode, result);
         }
 
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<IActionResult> Create([FromBody] CreateTaskDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateTaskCommand command)
         {
-            var result = await _taskService.CreateTaskAsync(dto);
+            var result = await _mediator.Send(command);
             return StatusCode(result.StatusCode, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTaskDto dto)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTaskCommand command)
         {
-            var result = await _taskService.UpdateTaskAsync(id, dto);
+            command.Id = id;
+            var result = await _mediator.Send(command);
             return StatusCode(result.StatusCode, result);
         }
 
         [HttpPatch("{id}/status")]
-        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateTaskStatusDto dto)
+        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateTaskStatusCommand command)
         {
-            var result = await _taskService.UpdateTaskStatusAsync(id, dto);
+            command.Id = id;
+            var result = await _mediator.Send(command);
             return StatusCode(result.StatusCode, result);
         }
 
@@ -64,7 +67,7 @@ namespace ERMS.API.Controllers
         [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _taskService.DeleteTaskAsync(id);
+            var result = await _mediator.Send(new DeleteTaskCommand { Id = id });
             return StatusCode(result.StatusCode, result);
         }
     }

@@ -7,6 +7,7 @@ import ProjectsPage from './features/projects/ProjectsPage';
 import ProjectDetailPage from './features/projects/ProjectDetailPage';
 import UsersPage from './features/users/UsersPage';
 import MyTasksPage from './features/tasks/MyTasksPage';
+import AuditLogsPage from './features/audit-logs/AuditLogsPage';
 
 export default function App() {
   return (
@@ -29,6 +30,14 @@ export default function App() {
             element={
               <ProtectedRoute roles={['Admin']}>
                 <UsersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/audit-logs"
+            element={
+              <ProtectedRoute roles={['Admin']}>
+                <AuditLogsPage />
               </ProtectedRoute>
             }
           />

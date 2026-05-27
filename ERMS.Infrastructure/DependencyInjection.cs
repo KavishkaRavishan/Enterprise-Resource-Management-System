@@ -3,6 +3,7 @@ using ERMS.Application.Interfaces.Repositories;
 using ERMS.Application.Services;
 using ERMS.Infrastructure.Auth;
 using ERMS.Infrastructure.Data;
+using ERMS.Infrastructure.Data.Interceptors;
 using ERMS.Infrastructure.Repositories;
 using ERMS.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,17 @@ namespace ERMS.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            // Context Accesor & User context
+            services.AddHttpContextAccessor();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+            // Interceptors
+            services.AddScoped<AuditSaveChangesInterceptor>();
+
             // Database
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AppDbContext>((sp, options) =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                       .AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>()));
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
@@ -27,6 +36,7 @@ namespace ERMS.Infrastructure
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<ITimeLogRepository, TimeLogRepository>();
             services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
             // Auth
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();

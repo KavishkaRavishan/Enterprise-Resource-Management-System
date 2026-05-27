@@ -15,6 +15,7 @@ namespace ERMS.Infrastructure.Data
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<TimeLog> TimeLogs => Set<TimeLog>();
         public DbSet<Attachment> Attachments => Set<Attachment>();
+        public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

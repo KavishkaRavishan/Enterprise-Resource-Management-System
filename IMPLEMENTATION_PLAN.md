@@ -19,9 +19,9 @@ This implementation plan outlines the steps to upgrade the Enterprise Resource M
 | 1 | Timesheets & Time Logging (Database, API, Frontend) | ✅ Completed |
 | 2 | Project & Task Document Management (File Uploads) | ✅ Completed |
 | 3 | Premium Dashboard Metrics & Interactive Charts (Recharts) | ✅ Completed |
-| 4 | Clean CQRS Refactor (MediatR & Pipeline Validation) | ⬜ Not Started |
-| 5 | Global System Audit Logging (EF Core Interceptor) | ⬜ Not Started |
-| 6 | System Testing (xUnit Test Suite) | ⬜ Not Started |
+| 4 | Clean CQRS Refactor (MediatR & Pipeline Validation) | ✅ Completed |
+| 5 | Global System Audit Logging (EF Core Interceptor) | ✅ Completed |
+| 6 | System Testing (xUnit Test Suite) | ✅ Completed |
 
 ---
 
@@ -75,29 +75,29 @@ This implementation plan outlines the steps to upgrade the Enterprise Resource M
 ## Phase 4: Clean CQRS Architecture Refactor
 
 ### Backend
-- [ ] Add NuGet packages: `MediatR`, `FluentValidation.DependencyInjectionExtensions`
-- [ ] Create Pipeline validation behavior: `ValidationBehavior.cs`
-- [ ] Refactor one core domain segment (e.g. `Tasks`) to use MediatR:
-  - Create commands: `CreateTaskCommand`, `UpdateTaskCommand`, `DeleteTaskCommand`
-  - Create queries: `GetTasksByProjectQuery`, `GetTaskByIdQuery`
-  - Write request validators using FluentValidation
+- [x] Add NuGet packages: `MediatR`, `FluentValidation.DependencyInjectionExtensions`
+- [x] Create Pipeline validation behavior: `ValidationBehavior.cs`
+- [x] Refactor one core domain segment (e.g. `Tasks`) to use MediatR:
+  - [x] Create commands: `CreateTaskCommand`, `UpdateTaskCommand`, `DeleteTaskCommand`
+  - [x] Create queries: `GetTasksByProjectQuery`, `GetTaskByIdQuery`
+  - [x] Write request validators using FluentValidation
 
 ---
 
 ## Phase 5: Global System Audit Logging
 
 ### Backend
-- [ ] Create `AuditLog.cs` entity in Domain layer (EntityName, EntityId, Action, Timestamp, OldValues, NewValues, UserId)
-- [ ] Implement EF Core `SaveChangesInterceptor` to capture dirty changes automatically during entity saves
-- [ ] Configure Context to auto-persist audit records upon save operations
-- [ ] Expose an Admin-only audit trail dashboard in the frontend
+- [x] Create `AuditLog.cs` entity in Domain layer (EntityName, EntityId, Action, Timestamp, OldValues, NewValues, UserId)
+- [x] Implement EF Core `SaveChangesInterceptor` to capture dirty changes automatically during entity saves
+- [x] Configure Context to auto-persist audit records upon save operations
+- [x] Expose an Admin-only audit trail dashboard in the frontend
 
 ---
 
 ## Phase 6: System Testing Suite
 
 ### Backend Tests
-- [ ] Create `ERMS.Tests` xUnit test project
-- [ ] Write repository mock tests using `Moq`
-- [ ] Write domain model unit tests validating business rules
-- [ ] Verify validation pipelines using unit test cases
+- [x] Create `ERMS.Tests` xUnit test project
+- [x] Write repository mock tests using `Moq`
+- [x] Write domain model unit tests validating business rules
+- [x] Verify validation pipelines using unit test cases

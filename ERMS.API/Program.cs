@@ -1,4 +1,5 @@
 using System.Text;
+using ERMS.Application;
 using ERMS.Infrastructure;
 using ERMS.Infrastructure.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -74,6 +75,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 // Infrastructure + Application layer DI
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // CORS
