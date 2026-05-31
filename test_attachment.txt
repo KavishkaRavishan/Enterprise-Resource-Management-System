@@ -1,2 +1,0 @@
-ERMS Enterprise Document Attachment System Test File.
-This verifies that local uploads and downloads are functioning perfectly.
